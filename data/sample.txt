@@ -1,0 +1,11 @@
+FastAPI is a modern Python web framework for building APIs.
+It is based on standard Python type hints and provides automatic API documentation.
+In this project, FastAPI is used as the backend service layer.
+
+Large language models can understand user instructions and generate text.
+However, they cannot directly execute code, read files, or query databases.
+To perform real actions, the backend application must provide tool functions.
+
+An Agent connects the language model with external tools.
+It decides which tool should be used, prepares tool arguments, runs the tool, and then returns the final answer.
+This makes the application more capable than a normal chatbot.
