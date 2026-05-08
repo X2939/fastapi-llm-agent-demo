@@ -1,6 +1,8 @@
 import ast
 import operator
 import sqlite3
+from app.vector_rag import answer_with_vector_rag
+
 
 _ALLOWED_OPERATORS = {
     ast.Add: operator.add,
@@ -79,3 +81,10 @@ def sql_query(query:str,db_path:str="data/demo.db")->list[dict]:
         return [dict(row) for row in rows]
     finally:
         conn.close()
+
+def rag_search(question: str) -> str:
+    """
+    Answer a question based on the local vector knowledge base.
+    """
+    return answer_with_vector_rag(question)
+

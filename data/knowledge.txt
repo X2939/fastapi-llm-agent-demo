@@ -1,0 +1,13 @@
+FastAPI 是一个现代 Python Web 框架，适合构建 HTTP API 服务。它基于类型注解和 Pydantic 做请求参数校验，可以自动生成 OpenAPI 文档和 Swagger UI。
+
+vLLM 是一个面向大模型在线推理的服务框架。它提供 OpenAI-compatible API，方便业务系统用类似 OpenAI SDK 的方式调用本地模型。vLLM 的优势主要体现在 KV Cache 管理、请求调度和高并发推理服务能力上。
+
+KV Cache 是大模型自回归生成过程中的缓存机制。模型在 prefill 阶段会处理输入上下文，并保存历史 token 对应的 Key 和 Value。在 decode 阶段，每生成一个新 token，都可以复用历史 Key 和 Value，避免重复计算前文。
+
+PagedAttention 是 vLLM 中用于优化 KV Cache 显存管理的重要机制。它借鉴操作系统分页思想，把 KV Cache 按 block 管理，减少显存碎片和浪费，从而提升并发推理场景下的显存利用率。
+
+Continuous batching 是在线推理服务中的动态批处理机制。它可以让已经完成的请求及时退出，并把新请求加入当前调度过程，从而减少 GPU 空转，提高整体吞吐。
+
+RAG 是 Retrieval-Augmented Generation，也就是检索增强生成。它会先根据用户问题从知识库中检索相关文档片段，再把检索结果和用户问题一起交给大模型生成回答。RAG 可以降低幻觉，让回答更贴合业务资料。
+
+在大模型应用后端中，FastAPI 通常负责业务接口封装，vLLM 负责底层模型推理服务，RAG 负责从本地知识库或企业文档中检索上下文，Agent 则负责根据用户任务选择工具并调度执行流程。

@@ -4,7 +4,7 @@ from typing import Any
 
 from app.llm_client import chat_completion
 from app.schemas import AgentChatResponse
-from app.tools import calculator, file_summary, sql_query
+from app.tools import calculator, file_summary, rag_search, sql_query
 
 
 TOOL_SELECTION_PROMPT = """
@@ -25,10 +25,14 @@ Available tools:
    - Arguments: {"query": "SELECT ... FROM products ..."}
    - Only SELECT queries are allowed.
 
+4. rag_search
+   - Use when the user asks about project knowledge, RAG, vLLM, FastAPI, KV Cache, PagedAttention, continuous batching, or local AI Agent concepts.
+   - Arguments: {"question": "the user question"}
+
 Return JSON only. Do not return markdown. Do not explain.
 JSON format:
 {
-  "tool": "calculator | file_summary | sql_query",
+  "tool": "calculator | file_summary | sql_query | rag_search",
   "arguments": {}
 }
 """
@@ -50,6 +54,15 @@ def run_agent(user_message: str) -> AgentChatResponse:
             tool_arguments=tool_arguments,
             tool_result=error_message,
             final_answer="抱歉，工具执行失败了。请检查输入或者工具参数！",
+        )
+
+    if selected_tool == "rag_search":
+        return AgentChatResponse(
+            user_message=user_message,
+            selected_tool=selected_tool,
+            tool_arguments=tool_arguments,
+            tool_result=tool_result,
+            final_answer=tool_result,
         )
     
     return AgentChatResponse(
@@ -83,7 +96,7 @@ def _select_tool_with_llm(user_message: str) -> dict[str, Any]:
     tool = tool_call.get("tool")
     arguments = tool_call.get("arguments", {})
 
-    if tool not in {"calculator", "file_summary", "sql_query"}:
+    if tool not in {"calculator", "file_summary", "sql_query", "rag_search"}:
         return _fallback_select_tool(user_message)
 
     if not isinstance(arguments, dict):
@@ -129,6 +142,11 @@ def _run_tool(selected_tool: str, arguments: dict[str, Any]) -> Any:
 
     if selected_tool == "sql_query":
         return sql_query(arguments["query"])
+    
+    if selected_tool == "rag_search":
+        question = arguments.get("question", "")
+        return rag_search(question)
+
 
     raise ValueError(f"Unknown tool: {selected_tool}")
 
@@ -176,6 +194,25 @@ def _fallback_select_tool(user_message: str) -> dict[str, Any]:
                 "query": "SELECT id, name, category, price, stock FROM products WHERE price > 100"
             },
         }
+
+    if (
+        "rag" in user_message.lower()
+        or "vllm" in user_message.lower()
+        or "fastapi" in user_message.lower()
+        or "kv cache" in user_message.lower()
+        or "pagedattention" in user_message.lower()
+        or "continuous batching" in user_message.lower()
+        or "向量" in user_message
+        or "知识库" in user_message
+        or "检索" in user_message
+        or "大模型" in user_message
+        or "推理服务" in user_message
+    ):
+        return {
+            "tool": "rag_search",
+            "arguments": {"question": user_message},
+        }
+
 
     return {
         "tool": "calculator",

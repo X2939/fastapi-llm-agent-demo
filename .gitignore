@@ -15,3 +15,5 @@ env/
 
 *.log
 data/*.db
+data/vector_index.faiss
+data/vector_chunks.json

@@ -19,6 +19,9 @@ def main():
         "请总结这个文件",
         "请查询价格大于100的商品",
         "请帮我计算 abc",
+        "RAG 是什么？",
+        "PagedAttention 解决了什么问题？",
+        "这个项目有没有接入 Redis？",
     ]
 
     for message in test_messages:
