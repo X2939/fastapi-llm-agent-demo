@@ -308,16 +308,6 @@ python3 scripts/test_agent.py
 - RAG 知识库问答
 - 异常输入
 
-## 面试可讲点
-
-- 为什么 Agent 不是普通聊天机器人：Agent 会选择工具并通过后端执行真实动作。
-- 为什么不用 LangChain：本项目目标是理解底层流程，所以手写工具选择、参数解析、工具执行和最终回答生成。
-- 为什么 LLM 不能直接查数据库：LLM 只能生成文本或结构化参数，真实数据库访问必须由后端代码完成。
-- 工具调用安全怎么做：calculator 不用 `eval`，SQL 只允许 `SELECT`，文件工具限制示例路径。
-- RAG 怎么做：使用 sentence-transformers 生成 chunk embedding，使用 FAISS 建立本地向量索引，查询时检索 top-k 相关 chunk，再把 context 和 question 交给 LLM 生成基于资料的回答。
-- 为什么需要 `score_threshold`：FAISS top-k 默认一定会返回最相近结果，即使问题和知识库不真正相关，所以需要阈值过滤低相关结果。
-- 为什么还需要 `required_terms`：相似度高只说明语义相关，不代表资料足够回答问题；当问题中的关键实体没有出现在上下文中时，直接拒答，避免模型根据常识发散。
-- SSE 和 token 级流式的区别：当前项目展示步骤级事件，后续可以把 LLM Client 改为 `stream=True` 实现 token 级输出。
 
 ## 后续扩展
 
